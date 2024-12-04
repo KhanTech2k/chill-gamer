@@ -47,6 +47,24 @@ async function run() {
             res.send(result)
         })
 
+        app.put('/review/:id', async(req,res)=>{
+            const id = req.params.id;
+            const filter ={_id: new ObjectId(id)}
+            const options = {upsert: true}
+            const updatedReview = req.body;
+            const review = {
+                $set: {
+                    gameCover: updatedReview.gameCover,
+                    gameTitle: updatedReview.gameTitle,
+                    publishingYear: updatedReview.publishingYear,
+                    rating: updatedReview.rating,
+                    genre: updatedReview.genre,
+                    reviewDescription: updatedReview.reviewDescription
+                }
+            }
+            const result = await reviewCollection.updateOne(filter,review,options )
+            res.send(result)
+        })
         app.delete('/review/:id', async(req,res)=>{
             const id = req.params.id;
             const query = {_id: new ObjectId(id)};
