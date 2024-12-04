@@ -27,30 +27,37 @@ async function run() {
         await client.connect();
 
         const reviewCollection = client.db('reviewDB').collection('review');
+        const watchlistCollection = client.db('reviewDB').collection('watchlist');
 
-        app.get('/review', async(req,res)=>{
-            const cursor =  reviewCollection.find()
+        app.get('/review', async (req, res) => {
+            const cursor = reviewCollection.find()
             const result = await cursor.toArray()
             res.send(result)
         })
-        app.get('/review/:id',async(req,res) =>{
+        app.get('/review/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await reviewCollection.findOne(query)
             res.send(result)
         })
 
-        app.post('/review', async(req,res)=>{
+        app.post('/review', async (req, res) => {
             const newReview = req.body;
             console.log(newReview)
             const result = await reviewCollection.insertOne(newReview);
             res.send(result)
         })
+        app.post("/watchlist", async (req, res) => {
+            const watchlistItem = req.body;
+            console.log(watchlistItem)
+            const result = await watchlistCollection.insertOne(watchlistItem);
+            res.send(result);
+        });
 
-        app.put('/review/:id', async(req,res)=>{
+        app.put('/review/:id', async (req, res) => {
             const id = req.params.id;
-            const filter ={_id: new ObjectId(id)}
-            const options = {upsert: true}
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
             const updatedReview = req.body;
             const review = {
                 $set: {
@@ -62,17 +69,17 @@ async function run() {
                     reviewDescription: updatedReview.reviewDescription
                 }
             }
-            const result = await reviewCollection.updateOne(filter,review,options )
+            const result = await reviewCollection.updateOne(filter, review, options)
             res.send(result)
         })
-        app.delete('/review/:id', async(req,res)=>{
+        app.delete('/review/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await reviewCollection.deleteOne(query)
             res.send(result)
         })
 
-        
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
