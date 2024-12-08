@@ -28,6 +28,7 @@ async function run() {
 
         const reviewCollection = client.db('reviewDB').collection('review');
         const watchlistCollection = client.db('reviewDB').collection('watchlist');
+        const gamesCollection = client.db("reviewDB").collection("upcomingGames");
 
         app.get('/review', async (req, res) => {
             const cursor = reviewCollection.find()
@@ -52,7 +53,7 @@ async function run() {
             const result = await watchlistCollection.insertOne(watchlistItem);
             res.send(result);
         });
-        
+
         app.get('/watchlist', async (req, res) => {
             const cursor = watchlistCollection.find()
             const result = await cursor.toArray()
@@ -95,6 +96,11 @@ async function run() {
             const result = await reviewCollection.deleteOne(query)
             res.send(result)
         })
+        app.get("/upcomingGames", async (req, res) => {
+            const cursor = gamesCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
 
         // Send a ping to confirm a successful connection
